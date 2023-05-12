@@ -1,6 +1,4 @@
-﻿using System.Threading.Channels;
-
-class Piskvorky
+﻿class Piskvorky
 {
     //create a playfield
     static char[,] playField =
@@ -9,6 +7,8 @@ class Piskvorky
         { '4', '5', '6' },
         { '7', '8', '9' }
     };
+    
+    static int turns = 0;
     
     static void Main(string[] args)
     {
@@ -21,17 +21,16 @@ class Piskvorky
             if (player == 2)
             {
                 player = 1;
-                EnterXorO(player, input);
+                EnterXorO('O', input);
             }
             else if (player == 1)
             {
                 player = 2;
-                EnterXorO(player, input);
+                EnterXorO('X', input);
             }
             
             SetField();
             
-            //check winner
             char[] playerChars = { 'X', 'O' };
             foreach (char playerChar in playerChars)
             {
@@ -39,7 +38,7 @@ class Piskvorky
                  || ((playField[1, 0] == playerChar) && (playField[1, 1] == playerChar) && (playField[1, 2] == playerChar))
                  || ((playField[2, 0] == playerChar) && (playField[2, 1] == playerChar && playField[2, 2] == playerChar))
                  || ((playField[0, 0] == playerChar) && (playField[1, 0] == playerChar) && (playField[2, 0] == playerChar))
-                 || ((playField[0, 1] == playerChar) && (playField[1, 1] == playerChar) && (playField[1, 2] == playerChar))
+                 || ((playField[0, 1] == playerChar) && (playField[1, 1] == playerChar) && (playField[2, 1] == playerChar))
                  || ((playField[0, 2] == playerChar) && (playField[2, 1] == playerChar) && (playField[2, 2] == playerChar))
                  || ((playField[0, 0] == playerChar) && (playField[1, 1] == playerChar) && (playField[2, 2] == playerChar))
                  || ((playField[0, 2] == playerChar) && (playField[1, 1] == playerChar) && (playField[2, 0] == playerChar))
@@ -53,9 +52,20 @@ class Piskvorky
                     {
                         Console.WriteLine("\nPlayer 1 has won!");
                     }
+
+                    Console.WriteLine("Please press any key to reset the game"!);
+                    Console.ReadKey();
+                    ResetField();
                     break;
                 }
-                
+                else if (turns == 10)
+                {
+                    Console.WriteLine("\nDraw");
+                    Console.WriteLine("Please press any key to reset the game"!);
+                    Console.ReadKey();
+                    ResetField();
+                    break;
+                }
             }
             
             do
@@ -64,7 +74,6 @@ class Piskvorky
                 try
                 {
                     input = Convert.ToInt32(Console.ReadLine());
-   
                 }
                 catch (Exception e)
                 {
@@ -99,6 +108,19 @@ class Piskvorky
         } while (true);
     }
 
+    public static void ResetField()
+    {
+        char[,] playFieldInitial =
+        {
+            { '1', '2', '3' },
+            { '4', '5', '6' },
+            { '7', '8', '9' }
+        };
+        playField = playFieldInitial;
+        SetField();
+        turns = 0;
+    }
+
     public static void SetField()
     {
         Console.Clear();
@@ -114,21 +136,11 @@ class Piskvorky
         Console.WriteLine("|     |     |     |");
         Console.WriteLine("|  {0}  |  {1}  |  {2}  |", playField[2,0], playField[2,1], playField[2,2]);
         Console.WriteLine("|_____|_____|_____|");
+        turns++;
     }
 
-    public static void EnterXorO(int player, int input)
+    public static void EnterXorO(char playerSign, int input)
     {
-        char playerSign = ' ';
-
-        if (player == 1)
-        {
-            playerSign = 'X';
-        }
-        else if (player == 2)
-        {
-            playerSign = 'O';
-        }
-        
         switch (input)
         {
             case 1: playField[0, 0] = playerSign; break;
